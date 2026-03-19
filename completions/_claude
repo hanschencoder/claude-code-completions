@@ -1,0 +1,844 @@
+#compdef claude
+# zsh completion for claude
+# 由 cc_generate.py 自动生成
+# 用法：将此文件放入 $fpath 目录（如 ~/.zsh/completions/），然后运行 compinit
+
+_claude() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '--add-dir[Additional directories to allow tool access to]' \
+    '--agent[Agent for the current session. Overrides the '\''agent'\'' setting.]' \
+    '--agents[JSON object defining custom agents (e.g. '\''{"reviewer"\: {"description"\: "Reviews code", "prompt"\: "You are a code reviewer"}}'\'')]' \
+    '--allow-dangerously-skip-permissions[Enable bypassing all permission checks as an option, without it being enabled by default. Recommended only for sandboxes with no internet access.]' \
+    '(--allowedTools,--allowed-tools)'{--allowedTools,--allowed-tools}'[Comma or space-separated list of tool names to allow (e.g. "Bash(git\:*) Edit")]' \
+    '--append-system-prompt[Append a system prompt to the default system prompt]' \
+    '--betas[Beta headers to include in API requests (API key users only)]' \
+    '--brief[Enable SendUserMessage tool for agent-to-user communication]' \
+    '--chrome[Enable Claude in Chrome integration]' \
+    '(-c,--continue)'{-c,--continue}'[Continue the most recent conversation in the current directory]' \
+    '--dangerously-skip-permissions[Bypass all permission checks. Recommended only for sandboxes with no internet access.]' \
+    '(-d,--debug)'{-d,--debug}'[Enable debug mode with optional category filtering (e.g., "api,hooks" or "!1p,!file")]' \
+    '--debug-file[Write debug logs to a specific file path (implicitly enables debug mode)]' \
+    '--disable-slash-commands[Disable all skills]' \
+    '(--disallowedTools,--disallowed-tools)'{--disallowedTools,--disallowed-tools}'[Comma or space-separated list of tool names to deny (e.g. "Bash(git\:*) Edit")]' \
+    '--effort[Effort level for the current session (low, medium, high, max)]' \
+    '--fallback-model[Enable automatic fallback to specified model when default model is overloaded (only works with --print)]' \
+    '--file[File resources to download at startup. Format\: file_id\:relative_path (e.g., --file file_abc\:doc.txt file_def\:img.png)]' \
+    '--fork-session[When resuming, create a new session ID instead of reusing the original (use with --resume or --continue)]' \
+    '--from-pr[Resume a session linked to a PR by PR number/URL, or open interactive picker with optional search term]' \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--ide[Automatically connect to IDE on startup if exactly one valid IDE is available]' \
+    '--include-partial-messages[Include partial message chunks as they arrive (only works with --print and --output-format=stream-json)]' \
+    '--input-format[Input format (only works with --print)\: "text" (default), or "stream-json" (realtime streaming input) (choices\: "text", "stream-json")]' \
+    '--json-schema[JSON Schema for structured output validation. Example\: {"type"\:"object","properties"\:{"name"\:{"type"\:"string"}},"required"\:\["name"\]}]' \
+    '--max-budget-usd[Maximum dollar amount to spend on API calls (only works with --print)]' \
+    '--mcp-config[Load MCP servers from JSON files or strings (space-separated)]' \
+    '--mcp-debug[\[DEPRECATED. Use --debug instead\] Enable MCP debug mode (shows MCP server errors)]' \
+    '--model[Model for the current session. Provide an alias for the latest model (e.g. '\''sonnet'\'' or '\''opus'\'') or a model'\''s full name (e.g. '\''claude-sonnet-4-6'\'').]' \
+    '(-n,--name)'{-n,--name}'[Set a display name for this session (shown in /resume and terminal title)]' \
+    '--no-chrome[Disable Claude in Chrome integration]' \
+    '--no-session-persistence[Disable session persistence - sessions will not be saved to disk and cannot be resumed (only works with --print)]' \
+    '--output-format[Output format (only works with --print)\: "text" (default), "json" (single result), or "stream-json" (realtime streaming) (choices\: "text", "json", "stream-json")]' \
+    '--permission-mode[Permission mode to use for the session (choices\: "acceptEdits", "bypassPermissions", "default", "dontAsk", "plan", "auto")]' \
+    '--plugin-dir[Load plugins from a directory for this session only (repeatable\: --plugin-dir A --plugin-dir B) (default\: \[\])]' \
+    '(-p,--print)'{-p,--print}'[Print response and exit (useful for pipes). Note\: The workspace trust dialog is skipped when Claude is run with the -p mode. Only use this flag in directories you trust.]' \
+    '--replay-user-messages[Re-emit user messages from stdin back on stdout for acknowledgment (only works with --input-format=stream-json and --output-format=stream-json)]' \
+    '(-r,--resume)'{-r,--resume}'[Resume a conversation by session ID, or open interactive picker with optional search term]' \
+    '--session-id[Use a specific session ID for the conversation (must be a valid UUID)]' \
+    '--setting-sources[Comma-separated list of setting sources to load (user, project, local).]' \
+    '--settings[Path to a settings JSON file or a JSON string to load additional settings from]' \
+    '--strict-mcp-config[Only use MCP servers from --mcp-config, ignoring all other MCP configurations]' \
+    '--system-prompt[System prompt to use for the session]' \
+    '--tmux[Create a tmux session for the worktree (requires --worktree). Uses iTerm2 native panes when available; use --tmux=classic for traditional tmux.]' \
+    '--tools[Specify the list of available tools from the built-in set. Use "" to disable all tools, "default" to use all tools, or specify tool names (e.g. "Bash,Edit,Read").]' \
+    '--verbose[Override verbose mode setting from config]' \
+    '(-v,--version)'{-v,--version}'[Output the version number]' \
+    '(-w,--worktree)'{-w,--worktree}'[Create a new git worktree for this session (optionally specify a name)]' \
+    '1: :->command' \
+    '*:: :->args' \
+  && return 0
+
+  case $state in
+    command)
+      local -a subcommands
+      subcommands=(
+        'agents:List configured agents'
+        'auth:Manage authentication'
+        'doctor:Check the health of your Claude Code auto-updater'
+        'install:Install Claude Code native build. Use \[target\] to specify version (stable,'
+        'mcp:Configure and manage MCP servers'
+        'plugin:Manage Claude Code plugins'
+        'plugins:Manage Claude Code plugins'
+        'setup-token:Set up a long-lived authentication token (requires Claude subscription)'
+        'update:Check for updates and install if available'
+        'upgrade:Check for updates and install if available'
+      )
+      _describe 'command' subcommands
+      ;;
+    args)
+      case $line[1] in
+        agents)
+          _claude_agents
+          ;;
+        auth)
+          _claude_auth
+          ;;
+        doctor)
+          _claude_doctor
+          ;;
+        install)
+          _claude_install
+          ;;
+        mcp)
+          _claude_mcp
+          ;;
+        plugin)
+          _claude_plugin
+          ;;
+        plugins)
+          _claude_plugins
+          ;;
+        setup-token)
+          _claude_setup-token
+          ;;
+        update)
+          _claude_update
+          ;;
+        upgrade)
+          _claude_upgrade
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_claude_agents() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--setting-sources[Comma-separated list of setting sources to load]' \
+  && return 0
+}
+
+_claude_auth() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '1: :->command' \
+    '*:: :->args' \
+  && return 0
+
+  case $state in
+    command)
+      local -a subcommands
+      subcommands=(
+        'help:display help for command'
+        'login:Sign in to your Anthropic account'
+        'logout:Log out from your Anthropic account'
+        'status:Show authentication status'
+      )
+      _describe 'command' subcommands
+      ;;
+    args)
+      case $line[1] in
+        help)
+          _claude_auth_help
+          ;;
+        login)
+          _claude_auth_login
+          ;;
+        logout)
+          _claude_auth_logout
+          ;;
+        status)
+          _claude_auth_status
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_claude_auth_help() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+  && return 0
+}
+
+_claude_auth_login() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '--claudeai[Use Claude subscription (default)]' \
+    '--console[Use Anthropic Console (API usage billing) instead of Claude]' \
+    '--email[Pre-populate email address on the login page]' \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--sso[Force SSO login flow]' \
+  && return 0
+}
+
+_claude_auth_logout() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_auth_status() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--json[Output as JSON (default)]' \
+    '--text[Output as human-readable text]' \
+  && return 0
+}
+
+_claude_doctor() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_install() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '--force[Force installation even if already installed]' \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_mcp() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '1: :->command' \
+    '*:: :->args' \
+  && return 0
+
+  case $state in
+    command)
+      local -a subcommands
+      subcommands=(
+        'add:Add an MCP server to Claude Code.'
+      )
+      _describe 'command' subcommands
+      ;;
+    args)
+      case $line[1] in
+        add)
+          _claude_mcp_add
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_claude_mcp_add() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '--callback-port[Fixed port for OAuth callback (for servers]' \
+    '--client-id[OAuth client ID for HTTP/SSE servers]' \
+    '--client-secret[Prompt for OAuth client secret (or set]' \
+    '(-e,--env)'{-e,--env}'[Set environment variables (e.g. -e KEY=value)]' \
+    '(-H,--header)'{-H,--header}'[Set WebSocket headers (e.g. -H "X-Api-Key\:]' \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Configuration scope (local, user, or project)]' \
+    '(-t,--transport)'{-t,--transport}'[Transport type (stdio, sse, http). Defaults to]' \
+  && return 0
+}
+
+_claude_plugin() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '1: :->command' \
+    '*:: :->args' \
+  && return 0
+
+  case $state in
+    command)
+      local -a subcommands
+      subcommands=(
+        'disable:Disable an enabled plugin'
+        'enable:Enable a disabled plugin'
+        'help:display help for command'
+        'install:Install a plugin from available marketplaces (use plugin@marketplace for'
+        'i:Install a plugin from available marketplaces (use plugin@marketplace for'
+        'list:List installed plugins'
+        'marketplace:Manage Claude Code marketplaces'
+        'uninstall:Uninstall an installed plugin'
+        'remove:Uninstall an installed plugin'
+        'update:Update a plugin to the latest version (restart required to apply)'
+        'validate:Validate a plugin or marketplace manifest'
+      )
+      _describe 'command' subcommands
+      ;;
+    args)
+      case $line[1] in
+        disable)
+          _claude_plugin_disable
+          ;;
+        enable)
+          _claude_plugin_enable
+          ;;
+        help)
+          _claude_plugin_help
+          ;;
+        install)
+          _claude_plugin_install
+          ;;
+        i)
+          _claude_plugin_i
+          ;;
+        list)
+          _claude_plugin_list
+          ;;
+        marketplace)
+          _claude_plugin_marketplace
+          ;;
+        uninstall)
+          _claude_plugin_uninstall
+          ;;
+        remove)
+          _claude_plugin_remove
+          ;;
+        update)
+          _claude_plugin_update
+          ;;
+        validate)
+          _claude_plugin_validate
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_claude_plugin_disable() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-a,--all)'{-a,--all}'[Disable all enabled plugins]' \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Installation scope\: user, project, local (default\:]' \
+  && return 0
+}
+
+_claude_plugin_enable() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Installation scope\: user, project, local (default\:]' \
+  && return 0
+}
+
+_claude_plugin_help() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+  && return 0
+}
+
+_claude_plugin_install() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Installation scope\: user, project, or local (default\:]' \
+  && return 0
+}
+
+_claude_plugin_i() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Installation scope\: user, project, or local (default\:]' \
+  && return 0
+}
+
+_claude_plugin_list() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '--available[Include available plugins from marketplaces (requires --json)]' \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--json[Output as JSON]' \
+  && return 0
+}
+
+_claude_plugin_marketplace() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '1: :->command' \
+    '*:: :->args' \
+  && return 0
+
+  case $state in
+    command)
+      local -a subcommands
+      subcommands=(
+        'add:Add a marketplace from a URL, path, or GitHub repo'
+        'help:display help for command'
+        'list:List all configured marketplaces'
+        'remove:Remove a configured marketplace'
+        'rm:Remove a configured marketplace'
+        'update:Update marketplace(s) from their source - updates all if no name specified'
+      )
+      _describe 'command' subcommands
+      ;;
+    args)
+      case $line[1] in
+        add)
+          _claude_plugin_marketplace_add
+          ;;
+        help)
+          _claude_plugin_marketplace_help
+          ;;
+        list)
+          _claude_plugin_marketplace_list
+          ;;
+        remove)
+          _claude_plugin_marketplace_remove
+          ;;
+        rm)
+          _claude_plugin_marketplace_rm
+          ;;
+        update)
+          _claude_plugin_marketplace_update
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_claude_plugin_marketplace_add() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--scope[Where to declare the marketplace\: user (default),]' \
+    '--sparse[Limit checkout to specific directories via git]' \
+  && return 0
+}
+
+_claude_plugin_marketplace_help() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+  && return 0
+}
+
+_claude_plugin_marketplace_list() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--json[Output as JSON]' \
+  && return 0
+}
+
+_claude_plugin_marketplace_remove() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_plugin_marketplace_rm() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_plugin_marketplace_update() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_plugin_uninstall() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--keep-data[Preserve the plugin'\''s persistent data directory]' \
+    '(-s,--scope)'{-s,--scope}'[Uninstall from scope\: user, project, or local (default\:]' \
+  && return 0
+}
+
+_claude_plugin_remove() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--keep-data[Preserve the plugin'\''s persistent data directory]' \
+    '(-s,--scope)'{-s,--scope}'[Uninstall from scope\: user, project, or local (default\:]' \
+  && return 0
+}
+
+_claude_plugin_update() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Installation scope\: user, project, local, managed]' \
+  && return 0
+}
+
+_claude_plugin_validate() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_plugins() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '1: :->command' \
+    '*:: :->args' \
+  && return 0
+
+  case $state in
+    command)
+      local -a subcommands
+      subcommands=(
+        'disable:Disable an enabled plugin'
+        'enable:Enable a disabled plugin'
+        'help:display help for command'
+        'install:Install a plugin from available marketplaces (use plugin@marketplace for'
+        'i:Install a plugin from available marketplaces (use plugin@marketplace for'
+        'list:List installed plugins'
+        'marketplace:Manage Claude Code marketplaces'
+        'uninstall:Uninstall an installed plugin'
+        'remove:Uninstall an installed plugin'
+        'update:Update a plugin to the latest version (restart required to apply)'
+        'validate:Validate a plugin or marketplace manifest'
+      )
+      _describe 'command' subcommands
+      ;;
+    args)
+      case $line[1] in
+        disable)
+          _claude_plugins_disable
+          ;;
+        enable)
+          _claude_plugins_enable
+          ;;
+        help)
+          _claude_plugins_help
+          ;;
+        install)
+          _claude_plugins_install
+          ;;
+        i)
+          _claude_plugins_i
+          ;;
+        list)
+          _claude_plugins_list
+          ;;
+        marketplace)
+          _claude_plugins_marketplace
+          ;;
+        uninstall)
+          _claude_plugins_uninstall
+          ;;
+        remove)
+          _claude_plugins_remove
+          ;;
+        update)
+          _claude_plugins_update
+          ;;
+        validate)
+          _claude_plugins_validate
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_claude_plugins_disable() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-a,--all)'{-a,--all}'[Disable all enabled plugins]' \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Installation scope\: user, project, local (default\:]' \
+  && return 0
+}
+
+_claude_plugins_enable() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Installation scope\: user, project, local (default\:]' \
+  && return 0
+}
+
+_claude_plugins_help() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+  && return 0
+}
+
+_claude_plugins_install() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Installation scope\: user, project, or local (default\:]' \
+  && return 0
+}
+
+_claude_plugins_i() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Installation scope\: user, project, or local (default\:]' \
+  && return 0
+}
+
+_claude_plugins_list() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '--available[Include available plugins from marketplaces (requires --json)]' \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--json[Output as JSON]' \
+  && return 0
+}
+
+_claude_plugins_marketplace() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '1: :->command' \
+    '*:: :->args' \
+  && return 0
+
+  case $state in
+    command)
+      local -a subcommands
+      subcommands=(
+        'add:Add a marketplace from a URL, path, or GitHub repo'
+        'help:display help for command'
+        'list:List all configured marketplaces'
+        'remove:Remove a configured marketplace'
+        'rm:Remove a configured marketplace'
+        'update:Update marketplace(s) from their source - updates all if no name specified'
+      )
+      _describe 'command' subcommands
+      ;;
+    args)
+      case $line[1] in
+        add)
+          _claude_plugins_marketplace_add
+          ;;
+        help)
+          _claude_plugins_marketplace_help
+          ;;
+        list)
+          _claude_plugins_marketplace_list
+          ;;
+        remove)
+          _claude_plugins_marketplace_remove
+          ;;
+        rm)
+          _claude_plugins_marketplace_rm
+          ;;
+        update)
+          _claude_plugins_marketplace_update
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_claude_plugins_marketplace_add() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--scope[Where to declare the marketplace\: user (default),]' \
+    '--sparse[Limit checkout to specific directories via git]' \
+  && return 0
+}
+
+_claude_plugins_marketplace_help() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+  && return 0
+}
+
+_claude_plugins_marketplace_list() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--json[Output as JSON]' \
+  && return 0
+}
+
+_claude_plugins_marketplace_remove() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_plugins_marketplace_rm() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_plugins_marketplace_update() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_plugins_uninstall() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--keep-data[Preserve the plugin'\''s persistent data directory]' \
+    '(-s,--scope)'{-s,--scope}'[Uninstall from scope\: user, project, or local (default\:]' \
+  && return 0
+}
+
+_claude_plugins_remove() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--keep-data[Preserve the plugin'\''s persistent data directory]' \
+    '(-s,--scope)'{-s,--scope}'[Uninstall from scope\: user, project, or local (default\:]' \
+  && return 0
+}
+
+_claude_plugins_update() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Installation scope\: user, project, local, managed]' \
+  && return 0
+}
+
+_claude_plugins_validate() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_setup-token() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_update() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_upgrade() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude

@@ -1,0 +1,721 @@
+name: claude
+description: Claude Code - starts an interactive session by default, use -p/--print
+  for
+options:
+- flags:
+  - --add-dir
+  description: Additional directories to allow tool access to
+- flags:
+  - --agent
+  description: Agent for the current session. Overrides the 'agent' setting.
+- flags:
+  - --agents
+  description: 'JSON object defining custom agents (e.g. ''{"reviewer": {"description":
+    "Reviews code", "prompt": "You are a code reviewer"}}'')'
+- flags:
+  - --allow-dangerously-skip-permissions
+  description: Enable bypassing all permission checks as an option, without it being
+    enabled by default. Recommended only for sandboxes with no internet access.
+- flags:
+  - --allowedTools
+  - --allowed-tools
+  description: Comma or space-separated list of tool names to allow (e.g. "Bash(git:*)
+    Edit")
+- flags:
+  - --append-system-prompt
+  description: Append a system prompt to the default system prompt
+- flags:
+  - --betas
+  description: Beta headers to include in API requests (API key users only)
+- flags:
+  - --brief
+  description: Enable SendUserMessage tool for agent-to-user communication
+- flags:
+  - --chrome
+  description: Enable Claude in Chrome integration
+- flags:
+  - -c
+  - --continue
+  description: Continue the most recent conversation in the current directory
+- flags:
+  - --dangerously-skip-permissions
+  description: Bypass all permission checks. Recommended only for sandboxes with no
+    internet access.
+- flags:
+  - -d
+  - --debug
+  description: Enable debug mode with optional category filtering (e.g., "api,hooks"
+    or "!1p,!file")
+- flags:
+  - --debug-file
+  description: Write debug logs to a specific file path (implicitly enables debug
+    mode)
+- flags:
+  - --disable-slash-commands
+  description: Disable all skills
+- flags:
+  - --disallowedTools
+  - --disallowed-tools
+  description: Comma or space-separated list of tool names to deny (e.g. "Bash(git:*)
+    Edit")
+- flags:
+  - --effort
+  description: Effort level for the current session (low, medium, high, max)
+- flags:
+  - --fallback-model
+  description: Enable automatic fallback to specified model when default model is
+    overloaded (only works with --print)
+- flags:
+  - --file
+  description: 'File resources to download at startup. Format: file_id:relative_path
+    (e.g., --file file_abc:doc.txt file_def:img.png)'
+- flags:
+  - --fork-session
+  description: When resuming, create a new session ID instead of reusing the original
+    (use with --resume or --continue)
+- flags:
+  - --from-pr
+  description: Resume a session linked to a PR by PR number/URL, or open interactive
+    picker with optional search term
+- flags:
+  - -h
+  - --help
+  description: Display help for command
+- flags:
+  - --ide
+  description: Automatically connect to IDE on startup if exactly one valid IDE is
+    available
+- flags:
+  - --include-partial-messages
+  description: Include partial message chunks as they arrive (only works with --print
+    and --output-format=stream-json)
+- flags:
+  - --input-format
+  description: 'Input format (only works with --print): "text" (default), or "stream-json"
+    (realtime streaming input) (choices: "text", "stream-json")'
+- flags:
+  - --json-schema
+  description: 'JSON Schema for structured output validation. Example: {"type":"object","properties":{"name":{"type":"string"}},"required":["name"]}'
+- flags:
+  - --max-budget-usd
+  description: Maximum dollar amount to spend on API calls (only works with --print)
+- flags:
+  - --mcp-config
+  description: Load MCP servers from JSON files or strings (space-separated)
+- flags:
+  - --mcp-debug
+  description: '[DEPRECATED. Use --debug instead] Enable MCP debug mode (shows MCP
+    server errors)'
+- flags:
+  - --model
+  description: Model for the current session. Provide an alias for the latest model
+    (e.g. 'sonnet' or 'opus') or a model's full name (e.g. 'claude-sonnet-4-6').
+- flags:
+  - -n
+  - --name
+  description: Set a display name for this session (shown in /resume and terminal
+    title)
+- flags:
+  - --no-chrome
+  description: Disable Claude in Chrome integration
+- flags:
+  - --no-session-persistence
+  description: Disable session persistence - sessions will not be saved to disk and
+    cannot be resumed (only works with --print)
+- flags:
+  - --output-format
+  description: 'Output format (only works with --print): "text" (default), "json"
+    (single result), or "stream-json" (realtime streaming) (choices: "text", "json",
+    "stream-json")'
+- flags:
+  - --permission-mode
+  description: 'Permission mode to use for the session (choices: "acceptEdits", "bypassPermissions",
+    "default", "dontAsk", "plan", "auto")'
+- flags:
+  - --plugin-dir
+  description: 'Load plugins from a directory for this session only (repeatable: --plugin-dir
+    A --plugin-dir B) (default: [])'
+- flags:
+  - -p
+  - --print
+  description: 'Print response and exit (useful for pipes). Note: The workspace trust
+    dialog is skipped when Claude is run with the -p mode. Only use this flag in directories
+    you trust.'
+- flags:
+  - --replay-user-messages
+  description: Re-emit user messages from stdin back on stdout for acknowledgment
+    (only works with --input-format=stream-json and --output-format=stream-json)
+- flags:
+  - -r
+  - --resume
+  description: Resume a conversation by session ID, or open interactive picker with
+    optional search term
+- flags:
+  - --session-id
+  description: Use a specific session ID for the conversation (must be a valid UUID)
+- flags:
+  - --setting-sources
+  description: Comma-separated list of setting sources to load (user, project, local).
+- flags:
+  - --settings
+  description: Path to a settings JSON file or a JSON string to load additional settings
+    from
+- flags:
+  - --strict-mcp-config
+  description: Only use MCP servers from --mcp-config, ignoring all other MCP configurations
+- flags:
+  - --system-prompt
+  description: System prompt to use for the session
+- flags:
+  - --tmux
+  description: Create a tmux session for the worktree (requires --worktree). Uses
+    iTerm2 native panes when available; use --tmux=classic for traditional tmux.
+- flags:
+  - --tools
+  description: Specify the list of available tools from the built-in set. Use "" to
+    disable all tools, "default" to use all tools, or specify tool names (e.g. "Bash,Edit,Read").
+- flags:
+  - --verbose
+  description: Override verbose mode setting from config
+- flags:
+  - -v
+  - --version
+  description: Output the version number
+- flags:
+  - -w
+  - --worktree
+  description: Create a new git worktree for this session (optionally specify a name)
+commands:
+- name: agents
+  description: List configured agents
+  options:
+  - flags:
+    - -h
+    - --help
+    description: Display help for command
+  - flags:
+    - --setting-sources
+    description: Comma-separated list of setting sources to load
+  commands: []
+- name: auth
+  description: Manage authentication
+  options:
+  - flags:
+    - -h
+    - --help
+    description: Display help for command
+  commands:
+  - name: help
+    description: display help for command
+    options: []
+    commands: []
+  - name: login
+    description: Sign in to your Anthropic account
+    options:
+    - flags:
+      - --claudeai
+      description: Use Claude subscription (default)
+    - flags:
+      - --console
+      description: Use Anthropic Console (API usage billing) instead of Claude
+    - flags:
+      - --email
+      description: Pre-populate email address on the login page
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - --sso
+      description: Force SSO login flow
+    commands: []
+  - name: logout
+    description: Log out from your Anthropic account
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    commands: []
+  - name: status
+    description: Show authentication status
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - --json
+      description: Output as JSON (default)
+    - flags:
+      - --text
+      description: Output as human-readable text
+    commands: []
+- name: doctor
+  description: Check the health of your Claude Code auto-updater
+  options:
+  - flags:
+    - -h
+    - --help
+    description: Display help for command
+  commands: []
+- name: install
+  description: Install Claude Code native build. Use [target] to specify version (stable,
+  options:
+  - flags:
+    - --force
+    description: Force installation even if already installed
+  - flags:
+    - -h
+    - --help
+    description: Display help for command
+  commands: []
+- name: mcp
+  description: Configure and manage MCP servers
+  options:
+  - flags:
+    - -h
+    - --help
+    description: Display help for command
+  commands:
+  - name: add
+    description: Add an MCP server to Claude Code.
+    options:
+    - flags:
+      - --callback-port
+      description: Fixed port for OAuth callback (for servers
+    - flags:
+      - --client-id
+      description: OAuth client ID for HTTP/SSE servers
+    - flags:
+      - --client-secret
+      description: Prompt for OAuth client secret (or set
+    - flags:
+      - -e
+      - --env
+      description: Set environment variables (e.g. -e KEY=value)
+    - flags:
+      - -H
+      - --header
+      description: 'Set WebSocket headers (e.g. -H "X-Api-Key:'
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: Configuration scope (local, user, or project)
+    - flags:
+      - -t
+      - --transport
+      description: Transport type (stdio, sse, http). Defaults to
+    commands: []
+- name: plugin
+  description: Manage Claude Code plugins
+  options:
+  - flags:
+    - -h
+    - --help
+    description: Display help for command
+  commands:
+  - name: disable
+    description: Disable an enabled plugin
+    options:
+    - flags:
+      - -a
+      - --all
+      description: Disable all enabled plugins
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: 'Installation scope: user, project, local (default:'
+    commands: []
+  - name: enable
+    description: Enable a disabled plugin
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: 'Installation scope: user, project, local (default:'
+    commands: []
+  - name: help
+    description: display help for command
+    options: []
+    commands: []
+  - name: install
+    description: Install a plugin from available marketplaces (use plugin@marketplace
+      for
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: 'Installation scope: user, project, or local (default:'
+    commands: []
+  - name: i
+    description: Install a plugin from available marketplaces (use plugin@marketplace
+      for
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: 'Installation scope: user, project, or local (default:'
+    commands: []
+  - name: list
+    description: List installed plugins
+    options:
+    - flags:
+      - --available
+      description: Include available plugins from marketplaces (requires --json)
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - --json
+      description: Output as JSON
+    commands: []
+  - name: marketplace
+    description: Manage Claude Code marketplaces
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    commands:
+    - name: add
+      description: Add a marketplace from a URL, path, or GitHub repo
+      options:
+      - flags:
+        - -h
+        - --help
+        description: Display help for command
+      - flags:
+        - --scope
+        description: 'Where to declare the marketplace: user (default),'
+      - flags:
+        - --sparse
+        description: Limit checkout to specific directories via git
+      commands: []
+    - name: help
+      description: display help for command
+      options: []
+      commands: []
+    - name: list
+      description: List all configured marketplaces
+      options:
+      - flags:
+        - -h
+        - --help
+        description: Display help for command
+      - flags:
+        - --json
+        description: Output as JSON
+      commands: []
+    - name: remove
+      description: Remove a configured marketplace
+      options:
+      - flags:
+        - -h
+        - --help
+        description: Display help for command
+      commands: []
+    - name: rm
+      description: Remove a configured marketplace
+      options:
+      - flags:
+        - -h
+        - --help
+        description: Display help for command
+      commands: []
+    - name: update
+      description: Update marketplace(s) from their source - updates all if no name
+        specified
+      options:
+      - flags:
+        - -h
+        - --help
+        description: Display help for command
+      commands: []
+  - name: uninstall
+    description: Uninstall an installed plugin
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - --keep-data
+      description: Preserve the plugin's persistent data directory
+    - flags:
+      - -s
+      - --scope
+      description: 'Uninstall from scope: user, project, or local (default:'
+    commands: []
+  - name: remove
+    description: Uninstall an installed plugin
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - --keep-data
+      description: Preserve the plugin's persistent data directory
+    - flags:
+      - -s
+      - --scope
+      description: 'Uninstall from scope: user, project, or local (default:'
+    commands: []
+  - name: update
+    description: Update a plugin to the latest version (restart required to apply)
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: 'Installation scope: user, project, local, managed'
+    commands: []
+  - name: validate
+    description: Validate a plugin or marketplace manifest
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    commands: []
+- name: plugins
+  description: Manage Claude Code plugins
+  options:
+  - flags:
+    - -h
+    - --help
+    description: Display help for command
+  commands:
+  - name: disable
+    description: Disable an enabled plugin
+    options:
+    - flags:
+      - -a
+      - --all
+      description: Disable all enabled plugins
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: 'Installation scope: user, project, local (default:'
+    commands: []
+  - name: enable
+    description: Enable a disabled plugin
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: 'Installation scope: user, project, local (default:'
+    commands: []
+  - name: help
+    description: display help for command
+    options: []
+    commands: []
+  - name: install
+    description: Install a plugin from available marketplaces (use plugin@marketplace
+      for
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: 'Installation scope: user, project, or local (default:'
+    commands: []
+  - name: i
+    description: Install a plugin from available marketplaces (use plugin@marketplace
+      for
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: 'Installation scope: user, project, or local (default:'
+    commands: []
+  - name: list
+    description: List installed plugins
+    options:
+    - flags:
+      - --available
+      description: Include available plugins from marketplaces (requires --json)
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - --json
+      description: Output as JSON
+    commands: []
+  - name: marketplace
+    description: Manage Claude Code marketplaces
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    commands:
+    - name: add
+      description: Add a marketplace from a URL, path, or GitHub repo
+      options:
+      - flags:
+        - -h
+        - --help
+        description: Display help for command
+      - flags:
+        - --scope
+        description: 'Where to declare the marketplace: user (default),'
+      - flags:
+        - --sparse
+        description: Limit checkout to specific directories via git
+      commands: []
+    - name: help
+      description: display help for command
+      options: []
+      commands: []
+    - name: list
+      description: List all configured marketplaces
+      options:
+      - flags:
+        - -h
+        - --help
+        description: Display help for command
+      - flags:
+        - --json
+        description: Output as JSON
+      commands: []
+    - name: remove
+      description: Remove a configured marketplace
+      options:
+      - flags:
+        - -h
+        - --help
+        description: Display help for command
+      commands: []
+    - name: rm
+      description: Remove a configured marketplace
+      options:
+      - flags:
+        - -h
+        - --help
+        description: Display help for command
+      commands: []
+    - name: update
+      description: Update marketplace(s) from their source - updates all if no name
+        specified
+      options:
+      - flags:
+        - -h
+        - --help
+        description: Display help for command
+      commands: []
+  - name: uninstall
+    description: Uninstall an installed plugin
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - --keep-data
+      description: Preserve the plugin's persistent data directory
+    - flags:
+      - -s
+      - --scope
+      description: 'Uninstall from scope: user, project, or local (default:'
+    commands: []
+  - name: remove
+    description: Uninstall an installed plugin
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - --keep-data
+      description: Preserve the plugin's persistent data directory
+    - flags:
+      - -s
+      - --scope
+      description: 'Uninstall from scope: user, project, or local (default:'
+    commands: []
+  - name: update
+    description: Update a plugin to the latest version (restart required to apply)
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: 'Installation scope: user, project, local, managed'
+    commands: []
+  - name: validate
+    description: Validate a plugin or marketplace manifest
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    commands: []
+- name: setup-token
+  description: Set up a long-lived authentication token (requires Claude subscription)
+  options:
+  - flags:
+    - -h
+    - --help
+    description: Display help for command
+  commands: []
+- name: update
+  description: Check for updates and install if available
+  options:
+  - flags:
+    - -h
+    - --help
+    description: Display help for command
+  commands: []
+- name: upgrade
+  description: Check for updates and install if available
+  options:
+  - flags:
+    - -h
+    - --help
+    description: Display help for command
+  commands: []
