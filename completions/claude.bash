@@ -50,11 +50,39 @@ _claude_completions() {
       return 0
       ;;
     mcp)
-      COMPREPLY=( $(compgen -W '-h --help add' -- "$cur") )
+      COMPREPLY=( $(compgen -W '-h --help add add-from-claude-desktop add-json get help list remove reset-project-choices serve' -- "$cur") )
       return 0
       ;;
     add)
       COMPREPLY=( $(compgen -W '--callback-port --client-id --client-secret -e --env -H --header -h --help -s --scope -t --transport' -- "$cur") )
+      return 0
+      ;;
+    add-from-claude-desktop)
+      COMPREPLY=( $(compgen -W '-h --help -s --scope' -- "$cur") )
+      return 0
+      ;;
+    add-json)
+      COMPREPLY=( $(compgen -W '--client-secret -h --help -s --scope' -- "$cur") )
+      return 0
+      ;;
+    get)
+      COMPREPLY=( $(compgen -W '-h --help' -- "$cur") )
+      return 0
+      ;;
+    list)
+      COMPREPLY=( $(compgen -W '-h --help' -- "$cur") )
+      return 0
+      ;;
+    remove)
+      COMPREPLY=( $(compgen -W '-h --help -s --scope' -- "$cur") )
+      return 0
+      ;;
+    reset-project-choices)
+      COMPREPLY=( $(compgen -W '-h --help' -- "$cur") )
+      return 0
+      ;;
+    serve)
+      COMPREPLY=( $(compgen -W '-d --debug -h --help --verbose' -- "$cur") )
       return 0
       ;;
     plugin)

@@ -311,6 +311,89 @@ commands:
       - --transport
       description: Transport type (stdio, sse, http). Defaults to
     commands: []
+  - name: add-from-claude-desktop
+    description: Import MCP servers from Claude Desktop (Mac and WSL only)
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: 'Configuration scope (local, user, or project) (default:'
+    commands: []
+  - name: add-json
+    description: Add an MCP server (stdio or SSE) with a JSON string
+    options:
+    - flags:
+      - --client-secret
+      description: Prompt for OAuth client secret (or set MCP_CLIENT_SECRET
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: 'Configuration scope (local, user, or project) (default:'
+    commands: []
+  - name: get
+    description: Get details about an MCP server
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    commands: []
+  - name: help
+    description: display help for command
+    options: []
+    commands: []
+  - name: list
+    description: List configured MCP servers
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    commands: []
+  - name: remove
+    description: Remove an MCP server
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - -s
+      - --scope
+      description: Configuration scope (local, user, or project) - if not
+    commands: []
+  - name: reset-project-choices
+    description: Reset all approved and rejected project-scoped (.mcp.json) servers
+      within this
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    commands: []
+  - name: serve
+    description: Start the Claude Code MCP server
+    options:
+    - flags:
+      - -d
+      - --debug
+      description: Enable debug mode
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - --verbose
+      description: Override verbose mode setting from config
+    commands: []
 - name: plugin
   description: Manage Claude Code plugins
   options:

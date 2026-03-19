@@ -239,6 +239,14 @@ _claude_mcp() {
       local -a subcommands
       subcommands=(
         'add:Add an MCP server to Claude Code.'
+        'add-from-claude-desktop:Import MCP servers from Claude Desktop (Mac and WSL only)'
+        'add-json:Add an MCP server (stdio or SSE) with a JSON string'
+        'get:Get details about an MCP server'
+        'help:display help for command'
+        'list:List configured MCP servers'
+        'remove:Remove an MCP server'
+        'reset-project-choices:Reset all approved and rejected project-scoped (.mcp.json) servers within this'
+        'serve:Start the Claude Code MCP server'
       )
       _describe 'command' subcommands
       ;;
@@ -246,6 +254,30 @@ _claude_mcp() {
       case $line[1] in
         add)
           _claude_mcp_add
+          ;;
+        add-from-claude-desktop)
+          _claude_mcp_add-from-claude-desktop
+          ;;
+        add-json)
+          _claude_mcp_add-json
+          ;;
+        get)
+          _claude_mcp_get
+          ;;
+        help)
+          _claude_mcp_help
+          ;;
+        list)
+          _claude_mcp_list
+          ;;
+        remove)
+          _claude_mcp_remove
+          ;;
+        reset-project-choices)
+          _claude_mcp_reset-project-choices
+          ;;
+        serve)
+          _claude_mcp_serve
           ;;
       esac
       ;;
@@ -265,6 +297,83 @@ _claude_mcp_add() {
     '(-h,--help)'{-h,--help}'[Display help for command]' \
     '(-s,--scope)'{-s,--scope}'[Configuration scope (local, user, or project)]' \
     '(-t,--transport)'{-t,--transport}'[Transport type (stdio, sse, http). Defaults to]' \
+  && return 0
+}
+
+_claude_mcp_add-from-claude-desktop() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Configuration scope (local, user, or project) (default\:]' \
+  && return 0
+}
+
+_claude_mcp_add-json() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '--client-secret[Prompt for OAuth client secret (or set MCP_CLIENT_SECRET]' \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Configuration scope (local, user, or project) (default\:]' \
+  && return 0
+}
+
+_claude_mcp_get() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_mcp_help() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+  && return 0
+}
+
+_claude_mcp_list() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_mcp_remove() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '(-s,--scope)'{-s,--scope}'[Configuration scope (local, user, or project) - if not]' \
+  && return 0
+}
+
+_claude_mcp_reset-project-choices() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_mcp_serve() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-d,--debug)'{-d,--debug}'[Enable debug mode]' \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--verbose[Override verbose mode setting from config]' \
   && return 0
 }
 

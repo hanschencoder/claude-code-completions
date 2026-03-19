@@ -56,9 +56,9 @@ def parse_options(text: str) -> list[dict]:
     in_options = False
 
     for line in text.splitlines():
-        # 检测 section header
+        # 检测 section header：只有无缩进的行才算（排除 Examples: 等嵌入标题）
         stripped = line.strip()
-        if re.match(r'^[A-Z][a-zA-Z ]*:$', stripped):
+        if not line.startswith(" ") and re.match(r'^[A-Z][a-zA-Z ]*:$', stripped):
             in_options = stripped.lower().startswith("option")
             continue
 
@@ -93,8 +93,9 @@ def parse_commands(text: str) -> list[dict]:
     in_commands = False
 
     for line in text.splitlines():
+        # 检测 section header：只有无缩进的行才算（排除 Examples: 等嵌入标题）
         stripped = line.strip()
-        if re.match(r'^[A-Z][a-zA-Z ]*:$', stripped):
+        if not line.startswith(" ") and re.match(r'^[A-Z][a-zA-Z ]*:$', stripped):
             in_commands = stripped.lower().startswith("command")
             continue
 
