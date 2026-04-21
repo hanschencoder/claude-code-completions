@@ -12,8 +12,9 @@ _claude() {
     '--agent[Agent for the current session. Overrides the '\''agent'\'' setting.]' \
     '--agents[JSON object defining custom agents (e.g. '\''{"reviewer"\: {"description"\: "Reviews code", "prompt"\: "You are a code reviewer"}}'\'')]' \
     '--allow-dangerously-skip-permissions[Enable bypassing all permission checks as an option, without it being enabled by default. Recommended only for sandboxes with no internet access.]' \
-    '(--allowedTools,--allowed-tools)'{--allowedTools,--allowed-tools}'[Comma or space-separated list of tool names to allow (e.g. "Bash(git\:*) Edit")]' \
+    '(--allowedTools,--allowed-tools)'{--allowedTools,--allowed-tools}'[Comma or space-separated list of tool names to allow (e.g. "Bash(git *) Edit")]' \
     '--append-system-prompt[Append a system prompt to the default system prompt]' \
+    '--bare[Minimal mode\: skip hooks, LSP, plugin sync, attribution, auto-memory, background prefetches, keychain reads, and CLAUDE.md auto-discovery. Sets CLAUDE_CODE_SIMPLE=1. Anthropic auth is strictly ANTHROPIC_API_KEY or apiKeyHelper via --settings (OAuth and keychain are never read). 3P providers (Bedrock/Vertex/Foundry) use their own credentials. Skills still resolve via /skill-name. Explicitly provide context via\: --system-prompt\[-file\], --append-system-prompt\[-file\], --add-dir (CLAUDE.md dirs), --mcp-config, --settings, --agents, --plugin-dir.]' \
     '--betas[Beta headers to include in API requests (API key users only)]' \
     '--brief[Enable SendUserMessage tool for agent-to-user communication]' \
     '--chrome[Enable Claude in Chrome integration]' \
@@ -22,14 +23,16 @@ _claude() {
     '(-d,--debug)'{-d,--debug}'[Enable debug mode with optional category filtering (e.g., "api,hooks" or "!1p,!file")]' \
     '--debug-file[Write debug logs to a specific file path (implicitly enables debug mode)]' \
     '--disable-slash-commands[Disable all skills]' \
-    '(--disallowedTools,--disallowed-tools)'{--disallowedTools,--disallowed-tools}'[Comma or space-separated list of tool names to deny (e.g. "Bash(git\:*) Edit")]' \
-    '--effort[Effort level for the current session (low, medium, high, max)]' \
+    '(--disallowedTools,--disallowed-tools)'{--disallowedTools,--disallowed-tools}'[Comma or space-separated list of tool names to deny (e.g. "Bash(git *) Edit")]' \
+    '--effort[Effort level for the current session (low, medium, high, xhigh, max)]' \
+    '--exclude-dynamic-system-prompt-sections[Move per-machine sections (cwd, env info, memory paths, git status) from the system prompt into the first user message. Improves cross-user prompt-cache reuse. Only applies with the default system prompt (ignored with --system-prompt). (default\: false)]' \
     '--fallback-model[Enable automatic fallback to specified model when default model is overloaded (only works with --print)]' \
     '--file[File resources to download at startup. Format\: file_id\:relative_path (e.g., --file file_abc\:doc.txt file_def\:img.png)]' \
     '--fork-session[When resuming, create a new session ID instead of reusing the original (use with --resume or --continue)]' \
     '--from-pr[Resume a session linked to a PR by PR number/URL, or open interactive picker with optional search term]' \
     '(-h,--help)'{-h,--help}'[Display help for command]' \
     '--ide[Automatically connect to IDE on startup if exactly one valid IDE is available]' \
+    '--include-hook-events[Include all hook lifecycle events in the output stream (only works with --output-format=stream-json)]' \
     '--include-partial-messages[Include partial message chunks as they arrive (only works with --print and --output-format=stream-json)]' \
     '--input-format[Input format (only works with --print)\: "text" (default), or "stream-json" (realtime streaming input) (choices\: "text", "stream-json")]' \
     '--json-schema[JSON Schema for structured output validation. Example\: {"type"\:"object","properties"\:{"name"\:{"type"\:"string"}},"required"\:\["name"\]}]' \
@@ -37,13 +40,14 @@ _claude() {
     '--mcp-config[Load MCP servers from JSON files or strings (space-separated)]' \
     '--mcp-debug[\[DEPRECATED. Use --debug instead\] Enable MCP debug mode (shows MCP server errors)]' \
     '--model[Model for the current session. Provide an alias for the latest model (e.g. '\''sonnet'\'' or '\''opus'\'') or a model'\''s full name (e.g. '\''claude-sonnet-4-6'\'').]' \
-    '(-n,--name)'{-n,--name}'[Set a display name for this session (shown in /resume and terminal title)]' \
+    '(-n,--name)'{-n,--name}'[Set a display name for this session (shown in the prompt box, /resume picker, and terminal title)]' \
     '--no-chrome[Disable Claude in Chrome integration]' \
     '--no-session-persistence[Disable session persistence - sessions will not be saved to disk and cannot be resumed (only works with --print)]' \
     '--output-format[Output format (only works with --print)\: "text" (default), "json" (single result), or "stream-json" (realtime streaming) (choices\: "text", "json", "stream-json")]' \
-    '--permission-mode[Permission mode to use for the session (choices\: "acceptEdits", "bypassPermissions", "default", "dontAsk", "plan", "auto")]' \
+    '--permission-mode[Permission mode to use for the session (choices\: "acceptEdits", "auto", "bypassPermissions", "default", "dontAsk", "plan")]' \
     '--plugin-dir[Load plugins from a directory for this session only (repeatable\: --plugin-dir A --plugin-dir B) (default\: \[\])]' \
     '(-p,--print)'{-p,--print}'[Print response and exit (useful for pipes). Note\: The workspace trust dialog is skipped when Claude is run with the -p mode. Only use this flag in directories you trust.]' \
+    '--remote-control-session-name-prefix[Prefix for auto-generated Remote Control session names (default\: hostname)]' \
     '--replay-user-messages[Re-emit user messages from stdin back on stdout for acknowledgment (only works with --input-format=stream-json and --output-format=stream-json)]' \
     '(-r,--resume)'{-r,--resume}'[Resume a conversation by session ID, or open interactive picker with optional search term]' \
     '--session-id[Use a specific session ID for the conversation (must be a valid UUID)]' \
@@ -66,7 +70,8 @@ _claude() {
       subcommands=(
         'agents:List configured agents'
         'auth:Manage authentication'
-        'doctor:Check the health of your Claude Code auto-updater'
+        'auto-mode:Inspect auto mode classifier configuration'
+        'doctor:Check the health of your Claude Code auto-updater. Note\: The workspace trust'
         'install:Install Claude Code native build. Use \[target\] to specify version (stable,'
         'mcp:Configure and manage MCP servers'
         'plugin:Manage Claude Code plugins'
@@ -84,6 +89,9 @@ _claude() {
           ;;
         auth)
           _claude_auth
+          ;;
+        auto-mode)
+          _claude_auto-mode
           ;;
         doctor)
           _claude_doctor
@@ -205,6 +213,82 @@ _claude_auth_status() {
   && return 0
 }
 
+_claude_auto-mode() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '1: :->command' \
+    '*:: :->args' \
+  && return 0
+
+  case $state in
+    command)
+      local -a subcommands
+      subcommands=(
+        'config:Print the effective auto mode config as JSON\: your settings where set, defaults'
+        'critique:Get AI feedback on your custom auto mode rules'
+        'defaults:Print the default auto mode environment, allow, and deny rules as JSON'
+        'help:display help for command'
+      )
+      _describe 'command' subcommands
+      ;;
+    args)
+      case $line[1] in
+        config)
+          _claude_auto-mode_config
+          ;;
+        critique)
+          _claude_auto-mode_critique
+          ;;
+        defaults)
+          _claude_auto-mode_defaults
+          ;;
+        help)
+          _claude_auto-mode_help
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_claude_auto-mode_config() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_auto-mode_critique() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+    '--model[Override which model is used]' \
+  && return 0
+}
+
+_claude_auto-mode_defaults() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+    '(-h,--help)'{-h,--help}'[Display help for command]' \
+  && return 0
+}
+
+_claude_auto-mode_help() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C \
+  && return 0
+}
+
 _claude_doctor() {
   local context state state_descr line
   typeset -A opt_args
@@ -241,9 +325,9 @@ _claude_mcp() {
         'add:Add an MCP server to Claude Code.'
         'add-from-claude-desktop:Import MCP servers from Claude Desktop (Mac and WSL only)'
         'add-json:Add an MCP server (stdio or SSE) with a JSON string'
-        'get:Get details about an MCP server'
+        'get:Get details about an MCP server. Note\: The workspace trust dialog is skipped'
         'help:display help for command'
-        'list:List configured MCP servers'
+        'list:List configured MCP servers. Note\: The workspace trust dialog is skipped and'
         'remove:Remove an MCP server'
         'reset-project-choices:Reset all approved and rejected project-scoped (.mcp.json) servers within this'
         'serve:Start the Claude Code MCP server'

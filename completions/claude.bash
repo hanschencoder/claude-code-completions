@@ -41,6 +41,22 @@ _claude_completions() {
       COMPREPLY=( $(compgen -W '-h --help --json --text' -- "$cur") )
       return 0
       ;;
+    auto-mode)
+      COMPREPLY=( $(compgen -W '-h --help config critique defaults help' -- "$cur") )
+      return 0
+      ;;
+    config)
+      COMPREPLY=( $(compgen -W '-h --help' -- "$cur") )
+      return 0
+      ;;
+    critique)
+      COMPREPLY=( $(compgen -W '-h --help --model' -- "$cur") )
+      return 0
+      ;;
+    defaults)
+      COMPREPLY=( $(compgen -W '-h --help' -- "$cur") )
+      return 0
+      ;;
     doctor)
       COMPREPLY=( $(compgen -W '-h --help' -- "$cur") )
       return 0
@@ -226,7 +242,7 @@ _claude_completions() {
       return 0
       ;;
     *)
-      COMPREPLY=( $(compgen -W '--add-dir --agent --agents --allow-dangerously-skip-permissions --allowedTools --allowed-tools --append-system-prompt --betas --brief --chrome -c --continue --dangerously-skip-permissions -d --debug --debug-file --disable-slash-commands --disallowedTools --disallowed-tools --effort --fallback-model --file --fork-session --from-pr -h --help --ide --include-partial-messages --input-format --json-schema --max-budget-usd --mcp-config --mcp-debug --model -n --name --no-chrome --no-session-persistence --output-format --permission-mode --plugin-dir -p --print --replay-user-messages -r --resume --session-id --setting-sources --settings --strict-mcp-config --system-prompt --tmux --tools --verbose -v --version -w --worktree agents auth doctor install mcp plugin plugins setup-token update upgrade' -- "$cur") )
+      COMPREPLY=( $(compgen -W '--add-dir --agent --agents --allow-dangerously-skip-permissions --allowedTools --allowed-tools --append-system-prompt --bare --betas --brief --chrome -c --continue --dangerously-skip-permissions -d --debug --debug-file --disable-slash-commands --disallowedTools --disallowed-tools --effort --exclude-dynamic-system-prompt-sections --fallback-model --file --fork-session --from-pr -h --help --ide --include-hook-events --include-partial-messages --input-format --json-schema --max-budget-usd --mcp-config --mcp-debug --model -n --name --no-chrome --no-session-persistence --output-format --permission-mode --plugin-dir -p --print --remote-control-session-name-prefix --replay-user-messages -r --resume --session-id --setting-sources --settings --strict-mcp-config --system-prompt --tmux --tools --verbose -v --version -w --worktree agents auth auto-mode doctor install mcp plugin plugins setup-token update upgrade' -- "$cur") )
       return 0
       ;;
   esac

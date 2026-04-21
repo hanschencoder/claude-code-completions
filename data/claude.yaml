@@ -19,11 +19,20 @@ options:
 - flags:
   - --allowedTools
   - --allowed-tools
-  description: Comma or space-separated list of tool names to allow (e.g. "Bash(git:*)
-    Edit")
+  description: Comma or space-separated list of tool names to allow (e.g. "Bash(git
+    *) Edit")
 - flags:
   - --append-system-prompt
   description: Append a system prompt to the default system prompt
+- flags:
+  - --bare
+  description: 'Minimal mode: skip hooks, LSP, plugin sync, attribution, auto-memory,
+    background prefetches, keychain reads, and CLAUDE.md auto-discovery. Sets CLAUDE_CODE_SIMPLE=1.
+    Anthropic auth is strictly ANTHROPIC_API_KEY or apiKeyHelper via --settings (OAuth
+    and keychain are never read). 3P providers (Bedrock/Vertex/Foundry) use their
+    own credentials. Skills still resolve via /skill-name. Explicitly provide context
+    via: --system-prompt[-file], --append-system-prompt[-file], --add-dir (CLAUDE.md
+    dirs), --mcp-config, --settings, --agents, --plugin-dir.'
 - flags:
   - --betas
   description: Beta headers to include in API requests (API key users only)
@@ -56,11 +65,17 @@ options:
 - flags:
   - --disallowedTools
   - --disallowed-tools
-  description: Comma or space-separated list of tool names to deny (e.g. "Bash(git:*)
-    Edit")
+  description: Comma or space-separated list of tool names to deny (e.g. "Bash(git
+    *) Edit")
 - flags:
   - --effort
-  description: Effort level for the current session (low, medium, high, max)
+  description: Effort level for the current session (low, medium, high, xhigh, max)
+- flags:
+  - --exclude-dynamic-system-prompt-sections
+  description: 'Move per-machine sections (cwd, env info, memory paths, git status)
+    from the system prompt into the first user message. Improves cross-user prompt-cache
+    reuse. Only applies with the default system prompt (ignored with --system-prompt).
+    (default: false)'
 - flags:
   - --fallback-model
   description: Enable automatic fallback to specified model when default model is
@@ -85,6 +100,10 @@ options:
   - --ide
   description: Automatically connect to IDE on startup if exactly one valid IDE is
     available
+- flags:
+  - --include-hook-events
+  description: Include all hook lifecycle events in the output stream (only works
+    with --output-format=stream-json)
 - flags:
   - --include-partial-messages
   description: Include partial message chunks as they arrive (only works with --print
@@ -113,8 +132,8 @@ options:
 - flags:
   - -n
   - --name
-  description: Set a display name for this session (shown in /resume and terminal
-    title)
+  description: Set a display name for this session (shown in the prompt box, /resume
+    picker, and terminal title)
 - flags:
   - --no-chrome
   description: Disable Claude in Chrome integration
@@ -129,8 +148,8 @@ options:
     "stream-json")'
 - flags:
   - --permission-mode
-  description: 'Permission mode to use for the session (choices: "acceptEdits", "bypassPermissions",
-    "default", "dontAsk", "plan", "auto")'
+  description: 'Permission mode to use for the session (choices: "acceptEdits", "auto",
+    "bypassPermissions", "default", "dontAsk", "plan")'
 - flags:
   - --plugin-dir
   description: 'Load plugins from a directory for this session only (repeatable: --plugin-dir
@@ -141,6 +160,9 @@ options:
   description: 'Print response and exit (useful for pipes). Note: The workspace trust
     dialog is skipped when Claude is run with the -p mode. Only use this flag in directories
     you trust.'
+- flags:
+  - --remote-control-session-name-prefix
+  description: 'Prefix for auto-generated Remote Control session names (default: hostname)'
 - flags:
   - --replay-user-messages
   description: Re-emit user messages from stdin back on stdout for acknowledgment
@@ -251,8 +273,50 @@ commands:
       - --text
       description: Output as human-readable text
     commands: []
+- name: auto-mode
+  description: Inspect auto mode classifier configuration
+  options:
+  - flags:
+    - -h
+    - --help
+    description: Display help for command
+  commands:
+  - name: config
+    description: 'Print the effective auto mode config as JSON: your settings where
+      set, defaults'
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    commands: []
+  - name: critique
+    description: Get AI feedback on your custom auto mode rules
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    - flags:
+      - --model
+      description: Override which model is used
+    commands: []
+  - name: defaults
+    description: Print the default auto mode environment, allow, and deny rules as
+      JSON
+    options:
+    - flags:
+      - -h
+      - --help
+      description: Display help for command
+    commands: []
+  - name: help
+    description: display help for command
+    options: []
+    commands: []
 - name: doctor
-  description: Check the health of your Claude Code auto-updater
+  description: 'Check the health of your Claude Code auto-updater. Note: The workspace
+    trust'
   options:
   - flags:
     - -h
@@ -339,7 +403,8 @@ commands:
       description: 'Configuration scope (local, user, or project) (default:'
     commands: []
   - name: get
-    description: Get details about an MCP server
+    description: 'Get details about an MCP server. Note: The workspace trust dialog
+      is skipped'
     options:
     - flags:
       - -h
@@ -351,7 +416,8 @@ commands:
     options: []
     commands: []
   - name: list
-    description: List configured MCP servers
+    description: 'List configured MCP servers. Note: The workspace trust dialog is
+      skipped and'
     options:
     - flags:
       - -h
